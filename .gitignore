@@ -55,3 +55,4 @@ infrastructure/terraform/.terraform.lock.hcl
 # Misc
 *.tsbuildinfo
 .turbo/
+apps/api/.env

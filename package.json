@@ -4,18 +4,19 @@
   "private": true,
   "description": "DineScout — Discover. Compare. Taste. AI-powered restaurant discovery platform.",
   "workspaces": [
+    "packages/tsconfig",
+    "packages/eslint-config",
+    "packages/shared-types",
     "apps/api",
     "apps/mobile",
-    "apps/admin",
-    "packages/shared-types",
-    "packages/eslint-config",
-    "packages/tsconfig"
+    "apps/admin"
   ],
   "scripts": {
     "dev:api": "npm run start:dev --workspace apps/api",
     "dev:mobile": "npm run start --workspace apps/mobile",
     "dev:admin": "npm run start --workspace apps/admin",
-    "build": "npm run build --workspaces --if-present",
+    "build:shared-types": "npm run build --workspace packages/shared-types",
+    "build": "npm run build:shared-types && npm run build --workspace apps/api --workspace apps/mobile --workspace apps/admin --if-present",
     "build:api": "npm run build --workspace apps/api",
     "build:mobile": "npm run build --workspace apps/mobile",
     "build:admin": "npm run build --workspace apps/admin",

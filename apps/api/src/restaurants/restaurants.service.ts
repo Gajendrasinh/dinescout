@@ -140,10 +140,14 @@ export class RestaurantsService {
   }
 
   async findOne(idOrSlug: string, userId?: string): Promise<Restaurant> {
+    // Public detail lookup only ever returns PUBLISHED restaurants — a
+    // draft or unpublished one must not be reachable just by guessing/
+    // sharing its id. Admins view drafts through AdminRestaurantsService.
     const row = await this.prisma.restaurant.findFirst({
       where: {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],
         deletedAt: null,
+        status: RestaurantStatus.PUBLISHED,
       },
       ...restaurantWithRelations,
     });

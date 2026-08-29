@@ -1,0 +1,40 @@
+<div class="page-header">
+  <div>
+    <h1>Reports</h1>
+    <p class="page-subtitle">Open review reports awaiting a decision.</p>
+  </div>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Reported Review</th>
+      <th>Reason</th>
+      <th>Reported By</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (loading()) {
+      <tr><td colspan="4" class="empty-row">Loading…</td></tr>
+    } @else if (reports().length === 0) {
+      <tr><td colspan="4" class="empty-row">No open reports 🎉</td></tr>
+    } @else {
+      @for (r of reports(); track r.id) {
+        <tr>
+          <td style="max-width: 360px;">
+            <strong>{{ r.review.title }}</strong>
+            <div class="page-subtitle" style="margin-top: 2px;">{{ r.review.comment }}</div>
+            <admin-status-badge [value]="r.review.status"></admin-status-badge>
+          </td>
+          <td>{{ r.reason }}<br /><span class="page-subtitle">{{ r.note }}</span></td>
+          <td>{{ r.reporter.displayName }}</td>
+          <td style="white-space: nowrap;">
+            <button type="button" class="btn btn--danger" (click)="removeReview(r.review.id, r.id)">Remove Review</button>
+            <button type="button" class="btn btn--outline" (click)="resolve(r.id, 'DISMISSED')">Dismiss</button>
+          </td>
+        </tr>
+      }
+    }
+  </tbody>
+</table>

@@ -11,7 +11,13 @@ interface RequestWithUser extends Request {
   user?: AuthenticatedUser;
 }
 
-/** Used with `@Roles(...)` on admin/moderator-only endpoints. Requires RequireAuthGuard first. */
+/**
+ * Used with `@Roles(...)` on admin/moderator-only endpoints. Registered
+ * both globally (APP_GUARD, so it runs before any per-controller
+ * RequireAuthGuard) and locally on admin controllers — so it must itself
+ * distinguish "not authenticated at all" (401) from "authenticated but not
+ * permitted" (403) rather than assuming RequireAuthGuard already ran.
+ */
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
@@ -27,7 +33,10 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const user = request.user;
-    if (!user || !requiredRoles.includes(user.role)) {
+    if (!user) {
+      throw ApiException.unauthorized(ErrorCode.UNAUTHORIZED, 'Authentication required');
+    }
+    if (!requiredRoles.includes(user.role)) {
       throw ApiException.forbidden(ErrorCode.FORBIDDEN, 'Insufficient permissions');
     }
     return true;

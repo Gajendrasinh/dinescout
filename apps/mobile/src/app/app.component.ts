@@ -1,8 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular';
-import { AuthService } from './core/services/auth.service';
 import { DeepLinkService } from './core/services/deep-link.service';
-import { FavoritesService } from './core/services/favorites.service';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +10,11 @@ import { FavoritesService } from './core/services/favorites.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
-  private readonly auth = inject(AuthService);
-  private readonly favorites = inject(FavoritesService);
   private readonly deepLinks = inject(DeepLinkService);
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    // Auth/favorites bootstrap runs earlier, via provideAppInitializer in
+    // app.config.ts — see the comment there for why it can't live here.
     this.deepLinks.init();
-    await this.auth.bootstrap();
-    await this.favorites.bootstrap();
   }
 }

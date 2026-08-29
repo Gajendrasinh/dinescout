@@ -1,0 +1,39 @@
+<div class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="page-subtitle">A snapshot of DineScout right now.</p>
+  </div>
+</div>
+
+@if (loading()) {
+  <p class="page-subtitle">Loading…</p>
+} @else {
+  @if (stats(); as s) {
+    <h3 class="page-subtitle">Restaurants</h3>
+    <div class="stat-grid">
+      <admin-stat-card label="Total" [value]="s.restaurants.total"></admin-stat-card>
+      <admin-stat-card label="Published" [value]="s.restaurants.published"></admin-stat-card>
+      <admin-stat-card label="Draft" [value]="s.restaurants.draft"></admin-stat-card>
+      <admin-stat-card label="Unpublished" [value]="s.restaurants.unpublished"></admin-stat-card>
+    </div>
+
+    <h3 class="page-subtitle">Reviews</h3>
+    <div class="stat-grid">
+      <admin-stat-card label="Total" [value]="s.reviews.total"></admin-stat-card>
+      <admin-stat-card label="Pending" [value]="s.reviews.pending"></admin-stat-card>
+      <admin-stat-card label="Flagged" [value]="s.reviews.flagged"></admin-stat-card>
+      <admin-stat-card label="Published" [value]="s.reviews.published"></admin-stat-card>
+      <admin-stat-card label="Removed" [value]="s.reviews.removed"></admin-stat-card>
+    </div>
+
+    <h3 class="page-subtitle">Community</h3>
+    <div class="stat-grid">
+      <admin-stat-card label="Users" [value]="s.users.total"></admin-stat-card>
+      <admin-stat-card label="Open Reports" [value]="s.openReports"></admin-stat-card>
+    </div>
+
+    @if (s.openReports > 0) {
+      <a routerLink="/reports" class="btn">Review {{ s.openReports }} open report(s) →</a>
+    }
+  }
+}

@@ -1,0 +1,52 @@
+<div class="page-header">
+  <div>
+    <h1>Restaurants</h1>
+    <p class="page-subtitle">Create, edit, and publish restaurants.</p>
+  </div>
+  <button type="button" class="btn" (click)="create()">+ New Restaurant</button>
+</div>
+
+<div class="filter-bar">
+  <select [ngModel]="statusFilter()" (ngModelChange)="onStatusFilterChange($event)">
+    <option value="">All statuses</option>
+    <option value="DRAFT">Draft</option>
+    <option value="PUBLISHED">Published</option>
+    <option value="UNPUBLISHED">Unpublished</option>
+  </select>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Rating</th>
+      <th>Price</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (loading()) {
+      <tr><td colspan="5" class="empty-row">Loading…</td></tr>
+    } @else if (rows().length === 0) {
+      <tr><td colspan="5" class="empty-row">No restaurants match this filter.</td></tr>
+    } @else {
+      @for (r of rows(); track r.id) {
+        <tr (click)="edit(r.id)" style="cursor: pointer">
+          <td>{{ r.name }}</td>
+          <td><admin-status-badge [value]="r.status"></admin-status-badge></td>
+          <td>{{ r.rating.toFixed(1) }} ({{ r.reviewCount }})</td>
+          <td>{{ r.priceRange }}</td>
+          <td>
+            @if (r.status !== 'PUBLISHED') {
+              <button type="button" class="btn btn--outline" (click)="publish(r.id, $event)">Publish</button>
+            } @else {
+              <button type="button" class="btn btn--outline" (click)="unpublish(r.id, $event)">Unpublish</button>
+            }
+            <button type="button" class="btn btn--danger" (click)="remove(r.id, $event)">Delete</button>
+          </td>
+        </tr>
+      }
+    }
+  </tbody>
+</table>

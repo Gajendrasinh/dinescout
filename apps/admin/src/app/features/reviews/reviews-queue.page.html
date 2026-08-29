@@ -1,0 +1,58 @@
+<div class="page-header">
+  <div>
+    <h1>Reviews</h1>
+    <p class="page-subtitle">Moderation queue — approve, flag, or remove reviews.</p>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <select [ngModel]="statusFilter()" (ngModelChange)="onStatusFilterChange($event)">
+    <option value="">All statuses</option>
+    <option value="PENDING">Pending</option>
+    <option value="PUBLISHED">Published</option>
+    <option value="FLAGGED">Flagged</option>
+    <option value="REMOVED">Removed</option>
+  </select>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Author</th>
+      <th>Rating</th>
+      <th>Title / Comment</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @if (loading()) {
+      <tr><td colspan="5" class="empty-row">Loading…</td></tr>
+    } @else if (rows().length === 0) {
+      <tr><td colspan="5" class="empty-row">No reviews match this filter.</td></tr>
+    } @else {
+      @for (r of rows(); track r.id) {
+        <tr>
+          <td>{{ r.author.displayName }}</td>
+          <td>{{ r.rating }}★</td>
+          <td style="max-width: 360px;">
+            <strong>{{ r.title }}</strong>
+            <div class="page-subtitle" style="margin-top: 2px;">{{ r.comment }}</div>
+          </td>
+          <td><admin-status-badge [value]="r.status"></admin-status-badge></td>
+          <td style="white-space: nowrap;">
+            @if (r.status !== 'PUBLISHED') {
+              <button type="button" class="btn btn--outline" (click)="setStatus(r.id, 'PUBLISHED')">Approve</button>
+            }
+            @if (r.status !== 'FLAGGED') {
+              <button type="button" class="btn btn--outline" (click)="setStatus(r.id, 'FLAGGED')">Flag</button>
+            }
+            @if (r.status !== 'REMOVED') {
+              <button type="button" class="btn btn--danger" (click)="setStatus(r.id, 'REMOVED')">Remove</button>
+            }
+          </td>
+        </tr>
+      }
+    }
+  </tbody>
+</table>

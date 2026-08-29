@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AdminModule } from './admin/admin.module';
 import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
 import { OptionalAuthGuard } from './auth/guards/optional-auth.guard';
@@ -46,6 +47,7 @@ import { UsersModule } from './users/users.module';
     ReviewsModule,
     FavoritesModule,
     AiModule,
+    AdminModule,
   ],
   providers: [
     // Order matters: OptionalAuthGuard populates request.user before

@@ -1,0 +1,24 @@
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar__brand">DineScout <span>Admin</span></div>
+    <nav class="sidebar__nav">
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/restaurants" routerLinkActive="active">Restaurants</a>
+      <a routerLink="/reviews" routerLinkActive="active">Reviews</a>
+      <a routerLink="/reports" routerLinkActive="active">Reports</a>
+      @if (auth.isAdmin()) {
+        <a routerLink="/users" routerLinkActive="active">Users</a>
+      }
+    </nav>
+    <div class="sidebar__user">
+      <div>
+        <strong>{{ auth.currentUser()?.displayName }}</strong>
+        <span>{{ auth.currentUser()?.role }}</span>
+      </div>
+      <button type="button" (click)="logout()">Log out</button>
+    </div>
+  </aside>
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

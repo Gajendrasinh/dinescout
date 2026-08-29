@@ -19,6 +19,12 @@
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    // Explicit, not auto-discovered: in this npm-workspaces monorepo,
+    // @types/jasmine (pulled in by apps/mobile) hoists to the shared root
+    // node_modules/@types alongside @types/jest — without this, TS's
+    // default "include every @types/* package" behavior picks up
+    // jasmine's conflicting global `expect`/`describe` typings here too.
+    "types": ["node", "jest"]
   }
 }

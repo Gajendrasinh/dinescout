@@ -1,0 +1,129 @@
+name: CI
+
+# install -> lint -> unit tests -> e2e -> build -> docker build, as required
+# by IMPLEMENTATION_PLAN.md. Jobs are chained with `needs` in that order so
+# a broken earlier step fails fast instead of burning CI minutes on a build
+# that was never going to be deployable anyway.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_call: {} # lets deploy.yml run this as its test stage
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  unit-tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build:shared-types
+      - name: API unit tests (Jest)
+        run: npm run test --workspace apps/api -- --ci
+      # Angular unit tests need a real browser; setup-chrome installs one
+      # and CHROME_BIN points karma.conf.js's ChromeHeadlessCI launcher at
+      # it (see apps/mobile/karma.conf.js / apps/admin/karma.conf.js).
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+      - name: Mobile unit tests (Karma/Jasmine)
+        run: npm run test --workspace apps/mobile
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+      - name: Admin unit tests (Karma/Jasmine)
+        run: npm run test --workspace apps/admin
+        env:
+          CHROME_BIN: ${{ steps.setup-chrome.outputs.chrome-path }}
+
+  api-e2e:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: dinescout
+          POSTGRES_PASSWORD: dinescout
+          POSTGRES_DB: dinescout_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U dinescout"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://dinescout:dinescout@localhost:5432/dinescout_test?schema=public
+      TEST_REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build:shared-types
+      - name: Prisma generate + migrate (test database)
+        working-directory: apps/api
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ env.TEST_DATABASE_URL }}
+      - name: API e2e tests (Jest + Supertest)
+        run: npm run test:e2e --workspace apps/api
+
+  build:
+    needs: api-e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npm run build:shared-types
+      - run: npm run build:api
+      - run: npm run build:prod --workspace apps/mobile
+      - run: npm run build:prod --workspace apps/admin
+
+  docker-build:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [api, mobile-web, admin]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build ${{ matrix.image }} image (not pushed — PR validation only)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infrastructure/docker/${{ matrix.image }}.Dockerfile
+          push: false
+          tags: dinescout-${{ matrix.image }}:ci
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}

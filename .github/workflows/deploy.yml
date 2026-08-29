@@ -1,0 +1,123 @@
+name: Deploy
+
+# Runs the same test -> build -> docker pipeline as CI on every push to
+# main, then — only if this repo has been configured with real AWS
+# credentials — builds+pushes images to ECR and applies the Terraform in
+# infrastructure/terraform/. Until those secrets/vars exist this workflow
+# still runs CI for free on main, and the deploy jobs report a clear
+# "not configured" notice instead of failing red. This is a documented CD
+# skeleton, not something exercised against a live AWS account in this
+# repo's history — see infrastructure/terraform/README.md.
+#
+# Required repository configuration to actually deploy:
+#   Variables: AWS_DEPLOY_ENABLED = "true", AWS_REGION, TF_STATE_BUCKET,
+#              TF_STATE_LOCK_TABLE
+#   Secrets:   AWS_DEPLOY_ROLE_ARN (an OIDC-assumable IAM role — see
+#              https://github.com/aws-actions/configure-aws-credentials)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write # needed for OIDC -> AWS role assumption
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  # ── test ────────────────────────────────────────────────────────────────
+  # Full CI pipeline reused as-is so main never deploys code that didn't
+  # pass lint/unit/e2e/build.
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  # ── build & push images ───────────────────────────────────────────────
+  build-and-push:
+    needs: ci
+    if: vars.AWS_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [api, mobile-web, admin]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: ecr
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infrastructure/docker/${{ matrix.image }}.Dockerfile
+          push: true
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/dinescout/${{ matrix.image }}:${{ github.sha }}
+            ${{ steps.ecr.outputs.registry }}/dinescout/${{ matrix.image }}:latest
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+
+  # ── report when deploy isn't configured ─────────────────────────────────
+  # Keeps `main` pushes green (rather than a confusing skipped/red job) when
+  # this repo hasn't been wired up with AWS credentials yet.
+  deploy-not-configured:
+    needs: ci
+    if: vars.AWS_DEPLOY_ENABLED != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "::notice::AWS_DEPLOY_ENABLED repository variable is not 'true' — skipping build-and-push/terraform-apply. CI (lint/unit/e2e/build/docker-build) still ran and passed. See infrastructure/terraform/README.md to configure real deployment."
+
+  # ── infrastructure ────────────────────────────────────────────────────
+  # `terraform plan` runs whenever deploy is enabled, so drift/config
+  # errors surface on every merge to main; `apply` additionally requires
+  # the `production` environment's manual approval (configure required
+  # reviewers under Settings -> Environments -> production).
+  terraform-plan:
+    needs: build-and-push
+    if: vars.AWS_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - run: terraform init -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" -backend-config="dynamodb_table=${{ vars.TF_STATE_LOCK_TABLE }}" -backend-config="region=${{ vars.AWS_REGION }}"
+      - run: terraform plan -var="environment=prod" -var="aws_region=${{ vars.AWS_REGION }}" -var="api_image_tag=${{ github.sha }}" -out=tfplan
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: infrastructure/terraform/tfplan
+          retention-days: 5
+
+  terraform-apply:
+    needs: terraform-plan
+    if: vars.AWS_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: production # requires manual approval — configure reviewers in repo settings
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - run: terraform init -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" -backend-config="dynamodb_table=${{ vars.TF_STATE_LOCK_TABLE }}" -backend-config="region=${{ vars.AWS_REGION }}"
+      - uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: infrastructure/terraform
+      - run: terraform apply -auto-approve tfplan

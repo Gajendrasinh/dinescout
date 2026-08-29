@@ -18,10 +18,18 @@ or deployed unless it actually was.
 
 Environment facts checked before planning:
 - Node 22.22, npm 10.9 available.
-- Docker CLI present but **no Docker daemon** in this sandbox → Dockerfiles
-  and `docker-compose.yml` will be written and validated for syntax/config
-  correctness, but `docker compose up` itself cannot be executed here. This
-  is called out explicitly rather than claimed as verified.
+- Docker CLI **and** a working daemon are present in this sandbox (`dockerd`
+  starts and `docker info`/`docker compose config` succeed) → Dockerfiles and
+  `docker-compose.yml` are written and validated for syntax/config
+  correctness. However, `docker build`/`docker pull` cannot actually complete
+  here: base-image layer pulls from `production.cloudfront.docker.com` (Docker
+  Hub's blob CDN) are rejected with HTTP 403 by this sandbox's network egress
+  policy — confirmed via a direct `docker pull node:22-slim` reproduction and
+  the agent-proxy status log, not assumed. That host is not on the sandbox's
+  allowlist, so this is a policy boundary of the dev container, not a defect
+  in the Dockerfiles; it is called out explicitly rather than claimed as
+  verified. A real deployment/CI host with normal registry egress would not
+  hit this.
 - PostgreSQL 16 and Redis are installed **locally** (not via Docker) → used
   to actually run migrations, seed data, the API, and integration tests
   against a real database and cache, so the backend is genuinely exercised
@@ -103,8 +111,12 @@ Environment facts checked before planning:
 - No real third-party AI/Maps calls unless the user supplies working keys
   in their own environment — the code paths are real and provider-agnostic,
   the vendor calls are not exercised in this sandbox.
-- `docker compose up` is not executed here (no daemon); Dockerfiles/compose
-  are reviewed for correctness instead of a live run.
+- `docker build`/`docker compose up` cannot complete an actual image pull in
+  this sandbox (Docker Hub CDN blocked by network egress policy, confirmed by
+  direct reproduction — see environment facts above); `docker compose config`
+  syntax/interpolation was verified live, and the Dockerfiles/compose file
+  were reviewed line-by-line for correctness, but no image was actually
+  built or run here.
 
 Progress and any scope changes will be reflected back into this file as the
 build proceeds.

@@ -1,0 +1,71 @@
+# DineScout local stack: API + PostgreSQL + Redis.
+#
+#   cp .env.example .env   # then fill in JWT secrets etc.
+#   docker compose up --build
+#   docker compose exec api npm run prisma:migrate:deploy --workspace apps/api
+#   docker compose exec api npm run prisma:seed --workspace apps/api
+#
+# The web apps (mobile, admin) are built as separate static-site images —
+# see infrastructure/docker/mobile-web.Dockerfile and admin.Dockerfile —
+# and aren't included here since local frontend dev normally runs via
+# `npm run dev:mobile` / `npm run dev:admin` against this API directly.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dinescout
+      POSTGRES_PASSWORD: dinescout
+      POSTGRES_DB: dinescout
+    ports:
+      - '5432:5432'
+    volumes:
+      - dinescout-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dinescout']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - dinescout-redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/api.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://dinescout:dinescout@postgres:5432/dinescout?schema=public
+      REDIS_URL: redis://redis:6379
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    healthcheck:
+      test: ['CMD', 'node', '-e', "require('http').get('http://127.0.0.1:3000/health/live', r => process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  dinescout-postgres-data:
+  dinescout-redis-data:

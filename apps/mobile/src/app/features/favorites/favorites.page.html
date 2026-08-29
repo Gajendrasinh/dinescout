@@ -1,0 +1,31 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Favorites</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (loading()) {
+    <div class="ds-favorites-loading">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else if (restaurants().length === 0) {
+    <app-empty-state
+      icon="heart-outline"
+      title="No favorites yet"
+      [message]="isLoggedIn() ? 'Tap the heart on any restaurant to save it here.' : 'Sign in to sync favorites across devices, or start saving now on this device.'"
+      actionLabel="Browse Restaurants"
+      (action)="browseRestaurants()"
+    ></app-empty-state>
+  } @else {
+    <div class="ds-favorites-grid ion-padding">
+      @for (restaurant of restaurants(); track restaurant.id) {
+        <app-restaurant-card
+          [restaurant]="withFav(restaurant)"
+          (open)="openRestaurant($event)"
+          (toggleFavorite)="toggleFavorite($event)"
+        ></app-restaurant-card>
+      }
+    </div>
+  }
+</ion-content>

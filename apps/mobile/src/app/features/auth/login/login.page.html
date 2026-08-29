@@ -1,0 +1,46 @@
+<ion-content>
+  <div class="ds-auth">
+    <div class="ds-auth__brand">DineScout</div>
+    <p class="ds-auth__tagline">Discover. Compare. Taste.</p>
+
+    <h1 class="ds-auth__title">Welcome back</h1>
+
+    @if (errorMessage()) {
+      <p class="ds-auth__error">{{ errorMessage() }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <ion-input
+        class="ds-auth__field"
+        label="Email"
+        labelPlacement="stacked"
+        type="email"
+        formControlName="email"
+        fill="outline"
+        autocomplete="email"
+      ></ion-input>
+
+      <ion-input
+        class="ds-auth__field"
+        label="Password"
+        labelPlacement="stacked"
+        type="password"
+        formControlName="password"
+        fill="outline"
+        autocomplete="current-password"
+      ></ion-input>
+
+      <ion-button expand="block" type="submit" class="ds-auth__submit" [disabled]="submitting()">
+        {{ submitting() ? 'Logging in…' : 'Log In' }}
+      </ion-button>
+    </form>
+
+    <p class="ion-text-center">
+      <a routerLink="/auth/forgot-password">Forgot password?</a>
+    </p>
+
+    <div class="ds-auth__footer">
+      Don't have an account? <a routerLink="/auth/register">Sign up</a>
+    </div>
+  </div>
+</ion-content>

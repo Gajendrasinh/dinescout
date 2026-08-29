@@ -1,0 +1,107 @@
+.ds-card {
+  margin: 0;
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-sm);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    box-shadow: var(--ds-shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+.ds-card--skeleton {
+  box-shadow: none;
+}
+
+.ds-card__image {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--ds-color-surface-alt);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.ds-card__fav {
+  position: absolute;
+  top: var(--ds-space-3);
+  right: var(--ds-space-3);
+  width: var(--ds-touch-target);
+  height: var(--ds-touch-target);
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--ds-shadow-sm);
+  font-size: 20px;
+  color: var(--ds-color-primary);
+  cursor: pointer;
+}
+
+.ds-card__status {
+  position: absolute;
+  bottom: var(--ds-space-3);
+  left: var(--ds-space-3);
+}
+
+.ds-card__body {
+  padding: var(--ds-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+}
+
+.ds-card__name {
+  margin: 0;
+  font-size: var(--ds-font-size-lg);
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--ds-color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  font-size: var(--ds-font-size-sm);
+}
+
+.ds-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+  margin: var(--ds-space-1) 0;
+  font-size: var(--ds-font-size-xs);
+  color: var(--ds-color-text-muted);
+}
+
+.ds-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--ds-font-size-sm);
+  color: var(--ds-color-text-muted);
+  margin-bottom: var(--ds-space-2);
+}
+
+.ds-card__distance {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ds-card__cta {
+  margin: 0;
+  --border-radius: var(--ds-radius-md);
+}

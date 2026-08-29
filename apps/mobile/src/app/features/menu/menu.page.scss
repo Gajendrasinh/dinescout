@@ -1,0 +1,88 @@
+.ds-menu-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+
+  h1 {
+    margin: 0;
+    font-size: var(--ds-font-size-xl);
+  }
+}
+
+.ds-icon-button {
+  border: none;
+  background: var(--ds-color-surface-alt);
+  border-radius: 50%;
+  width: var(--ds-touch-target);
+  height: var(--ds-touch-target);
+  font-size: 20px;
+}
+
+.ds-menu-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--ds-color-bg);
+}
+
+.ds-menu-category {
+  margin-bottom: var(--ds-space-6);
+  scroll-margin-top: 56px;
+}
+
+.ds-menu-item {
+  display: flex;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-3) 0;
+  border-bottom: 1px solid var(--ds-color-border);
+
+  img {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--ds-radius-md);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+}
+
+.ds-menu-item__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ds-menu-item__title {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-1);
+
+  h3 {
+    margin: 0;
+    font-size: var(--ds-font-size-md);
+  }
+}
+
+.ds-popular {
+  color: var(--ds-color-warning);
+}
+
+.ds-menu-item__tags {
+  display: flex;
+  gap: var(--ds-space-2);
+  font-size: var(--ds-font-size-xs);
+  margin-top: 2px;
+}
+
+.ds-unavailable {
+  color: var(--ds-color-danger);
+}
+
+.ds-allergens {
+  font-size: var(--ds-font-size-xs);
+  margin: 4px 0 0;
+}
+
+.ds-menu-item__price {
+  font-weight: var(--ds-font-weight-bold);
+  white-space: nowrap;
+  align-self: flex-start;
+}

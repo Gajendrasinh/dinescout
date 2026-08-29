@@ -1,0 +1,62 @@
+/* Core Ionic CSS (required base + utilities). */
+@import '@ionic/angular/css/core.css';
+@import '@ionic/angular/css/normalize.css';
+@import '@ionic/angular/css/structure.css';
+@import '@ionic/angular/css/typography.css';
+@import '@ionic/angular/css/display.css';
+
+/* Optional Ionic utilities used throughout the app. */
+@import '@ionic/angular/css/padding.css';
+@import '@ionic/angular/css/float-elements.css';
+@import '@ionic/angular/css/text-alignment.css';
+@import '@ionic/angular/css/text-transformation.css';
+@import '@ionic/angular/css/flex-utils.css';
+
+@import './theme/tokens.scss';
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--ds-font-family);
+  color: var(--ds-color-text);
+}
+
+.ds-section-title {
+  font-size: var(--ds-font-size-lg);
+  font-weight: var(--ds-font-weight-bold);
+  margin: 0 0 var(--ds-space-3);
+}
+
+.ds-muted {
+  color: var(--ds-color-text-muted);
+}
+
+.ds-skeleton {
+  border-radius: var(--ds-radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--ds-color-surface-alt) 25%,
+    var(--ds-color-border) 37%,
+    var(--ds-color-surface-alt) 63%
+  );
+  background-size: 400% 100%;
+  animation: ds-skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes ds-skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* Ensure every tappable control meets the accessible touch-target minimum. */
+ion-button,
+ion-fab-button,
+ion-icon[role='button'] {
+  min-height: var(--ds-touch-target);
+}

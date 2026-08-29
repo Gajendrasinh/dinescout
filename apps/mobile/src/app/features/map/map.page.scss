@@ -1,0 +1,31 @@
+.ds-map-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-3) var(--ds-space-4);
+  background: var(--ds-color-surface-alt);
+  font-size: var(--ds-font-size-sm);
+  color: var(--ds-color-text-muted);
+
+  ion-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+}
+
+.ds-map-banner--warn {
+  background: #fdf1e0;
+  color: var(--ds-color-warning);
+}
+
+.ds-map-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--ds-space-8);
+}
+
+.ds-map-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--ds-space-3);
+}

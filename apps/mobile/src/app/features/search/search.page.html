@@ -1,0 +1,65 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Search</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <div class="ds-search-bar">
+      <ion-searchbar
+        placeholder="Search restaurants, cuisines or dishes"
+        [debounce]="0"
+        (ionInput)="onQueryChange($event.detail.value ?? '')"
+      ></ion-searchbar>
+      <button type="button" class="ds-filter-button" (click)="openFilters()" aria-label="Filters">
+        <ion-icon name="options-outline"></ion-icon>
+        @if (activeFilterCount() > 0) {
+          <span class="ds-filter-badge">{{ activeFilterCount() }}</span>
+        }
+      </button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @switch (state()) {
+    @case ('loading') {
+      @if (results().length === 0) {
+        <div class="ds-search-loading">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+      }
+    }
+    @case ('error') {
+      <app-empty-state
+        icon="wifi-outline"
+        title="Couldn't load results"
+        message="Check your connection and try again."
+        actionLabel="Retry"
+        (action)="retry()"
+      ></app-empty-state>
+    }
+  }
+
+  @if (state() !== 'error' && results().length === 0 && state() !== 'loading') {
+    <app-empty-state
+      icon="search-outline"
+      title="No restaurants found"
+      message="Try a different search term or adjust your filters."
+    ></app-empty-state>
+  }
+
+  @if (results().length > 0) {
+    <div class="ds-search-grid ion-padding">
+      @for (restaurant of results(); track restaurant.id) {
+        <app-restaurant-card
+          [restaurant]="withFav(restaurant)"
+          (open)="openRestaurant($event)"
+          (toggleFavorite)="toggleFavorite($event)"
+        ></app-restaurant-card>
+      }
+    </div>
+
+    <ion-infinite-scroll (ionInfinite)="onScrollEnd($event)" [disabled]="!hasMore()">
+      <ion-infinite-scroll-content loadingSpinner="crescent"></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  }
+</ion-content>

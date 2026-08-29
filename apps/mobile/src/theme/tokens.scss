@@ -1,0 +1,89 @@
+// DineScout design tokens. These are the single source of truth for the
+// app's look — components read tokens, not raw hex/px values, so the
+// theme can be retuned from one place.
+
+:root {
+  // ── Color ────────────────────────────────────────────────────────────
+  --ds-color-primary: #ff5a1f; // warm coral — appetite-forward, not a generic brand blue
+  --ds-color-primary-shade: #e04f19;
+  --ds-color-primary-tint: #ff7a49;
+  --ds-color-secondary: #1f7a5c; // deep herb green, used sparingly (open/veg indicators)
+  --ds-color-accent: #ffb703; // rating stars / highlights
+
+  --ds-color-bg: #fbfaf8;
+  --ds-color-surface: #ffffff;
+  --ds-color-surface-alt: #f4f1ec;
+  --ds-color-border: #ebe6de;
+
+  --ds-color-text: #1c1b19;
+  --ds-color-text-muted: #6f6a62;
+  --ds-color-text-inverse: #ffffff;
+
+  --ds-color-success: #2a9d5c;
+  --ds-color-warning: #d98a12;
+  --ds-color-danger: #d34848;
+
+  // ── Spacing (4px base scale) ─────────────────────────────────────────
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-space-10: 40px;
+
+  // ── Radius ───────────────────────────────────────────────────────────
+  --ds-radius-sm: 8px;
+  --ds-radius-md: 14px;
+  --ds-radius-lg: 20px;
+  --ds-radius-pill: 999px;
+
+  // ── Shadow ───────────────────────────────────────────────────────────
+  --ds-shadow-sm: 0 1px 3px rgba(28, 27, 25, 0.06), 0 1px 2px rgba(28, 27, 25, 0.04);
+  --ds-shadow-md: 0 4px 14px rgba(28, 27, 25, 0.08);
+  --ds-shadow-lg: 0 12px 28px rgba(28, 27, 25, 0.14);
+
+  // ── Typography ───────────────────────────────────────────────────────
+  --ds-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --ds-font-size-xs: 12px;
+  --ds-font-size-sm: 14px;
+  --ds-font-size-md: 16px;
+  --ds-font-size-lg: 18px;
+  --ds-font-size-xl: 22px;
+  --ds-font-size-2xl: 28px;
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 550;
+  --ds-font-weight-bold: 700;
+
+  // Minimum interactive target per accessibility guidance.
+  --ds-touch-target: 44px;
+}
+
+// ── Map onto Ionic's own CSS variables so native Ionic components (ion-
+// button, ion-tab-bar, ion-badge, …) pick up the same palette without a
+// components fork. ──────────────────────────────────────────────────────
+:root {
+  --ion-color-primary: var(--ds-color-primary);
+  --ion-color-primary-rgb: 255, 90, 31;
+  --ion-color-primary-contrast: var(--ds-color-text-inverse);
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--ds-color-primary-shade);
+  --ion-color-primary-tint: var(--ds-color-primary-tint);
+
+  --ion-color-secondary: var(--ds-color-secondary);
+  --ion-color-secondary-rgb: 31, 122, 92;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #1b6b51;
+  --ion-color-secondary-tint: #35876a;
+
+  --ion-background-color: var(--ds-color-bg);
+  --ion-text-color: var(--ds-color-text);
+  --ion-font-family: var(--ds-font-family);
+
+  --ion-toolbar-background: var(--ds-color-bg);
+  --ion-item-background: var(--ds-color-surface);
+  --ion-card-background: var(--ds-color-surface);
+}

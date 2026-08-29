@@ -1,0 +1,128 @@
+.ds-reviews-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+
+  h1 {
+    margin: 0;
+    font-size: var(--ds-font-size-xl);
+  }
+}
+
+.ds-icon-button {
+  border: none;
+  background: var(--ds-color-surface-alt);
+  border-radius: 50%;
+  width: var(--ds-touch-target);
+  height: var(--ds-touch-target);
+  font-size: 20px;
+}
+
+.ds-icon-button--sm {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+.ds-rating-overview {
+  display: flex;
+  gap: var(--ds-space-6);
+  align-items: center;
+}
+
+.ds-rating-overview__score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ds-rating-overview__number {
+  font-size: 40px;
+  font-weight: var(--ds-font-weight-bold);
+  line-height: 1;
+}
+
+.ds-rating-overview__bars {
+  flex: 1;
+}
+
+.ds-rating-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  font-size: var(--ds-font-size-xs);
+  margin-bottom: 4px;
+}
+
+.ds-rating-bar__track {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--ds-color-surface-alt);
+  overflow: hidden;
+}
+
+.ds-rating-bar__fill {
+  height: 100%;
+  background: var(--ds-color-accent);
+}
+
+.ds-reviews-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--ds-space-3) 0;
+}
+
+.ds-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+}
+
+.ds-review {
+  padding-bottom: var(--ds-space-4);
+  border-bottom: 1px solid var(--ds-color-border);
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2);
+    margin-bottom: var(--ds-space-2);
+  }
+
+  h3 {
+    margin: var(--ds-space-1) 0 4px;
+    font-size: var(--ds-font-size-md);
+  }
+
+  p {
+    margin: 0;
+    color: var(--ds-color-text-muted);
+    line-height: 1.5;
+  }
+}
+
+.ds-review__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ds-color-primary-tint);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--ds-font-weight-bold);
+  flex-shrink: 0;
+}
+
+.ds-review__author {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-review__edited {
+  font-size: var(--ds-font-size-xs);
+}

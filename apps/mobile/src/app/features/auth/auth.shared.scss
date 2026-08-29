@@ -1,0 +1,53 @@
+.ds-auth {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: var(--ds-space-8) var(--ds-space-5) var(--ds-space-5);
+}
+
+.ds-auth__brand {
+  font-size: var(--ds-font-size-2xl);
+  font-weight: var(--ds-font-weight-bold);
+  color: var(--ds-color-primary);
+  margin-bottom: var(--ds-space-1);
+}
+
+.ds-auth__tagline {
+  color: var(--ds-color-text-muted);
+  margin-bottom: var(--ds-space-8);
+}
+
+.ds-auth__title {
+  font-size: var(--ds-font-size-xl);
+  margin-bottom: var(--ds-space-5);
+}
+
+.ds-auth__field {
+  margin-bottom: var(--ds-space-4);
+}
+
+.ds-auth__error {
+  color: var(--ds-color-danger);
+  background: #fbe4e4;
+  padding: var(--ds-space-3);
+  border-radius: var(--ds-radius-md);
+  margin-bottom: var(--ds-space-4);
+  font-size: var(--ds-font-size-sm);
+}
+
+.ds-auth__submit {
+  margin-top: var(--ds-space-2);
+}
+
+.ds-auth__footer {
+  margin-top: auto;
+  text-align: center;
+  padding-top: var(--ds-space-6);
+  color: var(--ds-color-text-muted);
+
+  a {
+    color: var(--ds-color-primary);
+    font-weight: var(--ds-font-weight-medium);
+    text-decoration: none;
+  }
+}

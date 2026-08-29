@@ -1,0 +1,128 @@
+<ion-content [fullscreen]="true">
+  @if (loading()) {
+    <div class="ds-details-skeleton">
+      <ion-skeleton-text [animated]="true" style="width: 100%; height: 260px;"></ion-skeleton-text>
+      <div class="ion-padding">
+        <ion-skeleton-text [animated]="true" style="width: 60%; height: 24px;"></ion-skeleton-text>
+        <ion-skeleton-text [animated]="true" style="width: 40%; height: 16px;"></ion-skeleton-text>
+      </div>
+    </div>
+  } @else if (notFound()) {
+    <div class="ds-details-error ion-padding">
+      <h2>Restaurant not found</h2>
+      <ion-button (click)="goHome()" fill="outline">Back to Home</ion-button>
+    </div>
+  } @else {
+    @if (restaurant(); as r) {
+    <div class="ds-hero">
+      <img [src]="r.heroImageUrl" [alt]="r.name" />
+      <button class="ds-hero__back" type="button" (click)="goBack()" aria-label="Back">
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+      <button class="ds-hero__fav" type="button" (click)="toggleFavorite()" [attr.aria-pressed]="isFavorite">
+        <ion-icon [name]="isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+      </button>
+    </div>
+
+    <div class="ion-padding">
+      <h1 class="ds-details-name">{{ r.name }}</h1>
+
+      <div class="ds-details-meta">
+        <app-star-rating [rating]="r.rating"></app-star-rating>
+        <span class="ds-muted">{{ r.reviewCount | number }} reviews</span>
+        <span>·</span>
+        <span>{{ r.priceRange }}</span>
+        <span>·</span>
+        <span [class.ds-open]="r.isOpenNow" [class.ds-closed]="!r.isOpenNow">
+          {{ r.isOpenNow ? 'Open now' : 'Closed' }}
+        </span>
+      </div>
+
+      <div class="ds-details-tags">
+        @for (cuisine of r.cuisines; track cuisine.id) {
+          <span class="ds-card__tag">{{ cuisine.emoji }} {{ cuisine.name }}</span>
+        }
+        @for (option of r.dietaryOptions; track option.id) {
+          <span class="ds-card__tag">{{ option.emoji }} {{ option.label }}</span>
+        }
+      </div>
+
+      <div class="ds-actions">
+        <button type="button" (click)="call()" [disabled]="!r.phone">
+          <ion-icon name="call-outline"></ion-icon><span>Call</span>
+        </button>
+        <button type="button" (click)="openDirections()">
+          <ion-icon name="navigate-outline"></ion-icon><span>Directions</span>
+        </button>
+        <button type="button" (click)="openWebsite()" [disabled]="!r.website">
+          <ion-icon name="compass-outline"></ion-icon><span>Website</span>
+        </button>
+        <button type="button" (click)="share()">
+          <ion-icon name="share-outline"></ion-icon><span>Share</span>
+        </button>
+      </div>
+
+      <section class="ds-details-section">
+        <h2 class="ds-section-title">About</h2>
+        <p>{{ r.description }}</p>
+      </section>
+
+      @if (aiSummary(); as ai) {
+        <section class="ds-details-section ds-ai-summary">
+          <h2 class="ds-section-title">
+            <ion-icon name="sparkles" aria-hidden="true"></ion-icon>
+            AI Review Summary
+            @if (ai.degraded) {
+              <span class="ds-ai-badge">Basic mode</span>
+            }
+          </h2>
+          <p>{{ ai.summary }}</p>
+          <p class="ds-muted ds-ai-disclaimer">Generated from real reviews below — not written by staff.</p>
+        </section>
+      }
+
+      <section class="ds-details-section">
+        <div class="ds-section-header">
+          <h2 class="ds-section-title">Reviews</h2>
+          <button type="button" class="ds-link" (click)="viewReviews()">See all</button>
+        </div>
+        @if (reviewSummary(); as summary) {
+          <div class="ds-review-summary">
+            <span class="ds-review-summary__score">{{ summary.averageRating }}</span>
+            <div>
+              <app-star-rating [rating]="summary.averageRating"></app-star-rating>
+              <span class="ds-muted">{{ summary.reviewCount }} reviews</span>
+            </div>
+          </div>
+        }
+      </section>
+
+      <section class="ds-details-section">
+        <h2 class="ds-section-title">Opening Hours</h2>
+        <ul class="ds-hours">
+          @for (hour of r.openingHours; track hour.dayOfWeek) {
+            <li>
+              <span>{{ dayLabels[hour.dayOfWeek] }}</span>
+              <span>{{ hour.isClosed ? 'Closed' : hour.opensAt + ' – ' + hour.closesAt }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="ds-details-section">
+        <h2 class="ds-section-title">Location</h2>
+        <p>{{ r.address }}</p>
+      </section>
+
+      <button type="button" class="ds-ask-ai" (click)="askAi()">
+        <ion-icon name="sparkles"></ion-icon>
+        Ask DineScout AI about this place
+      </button>
+    </div>
+
+    <div class="ds-sticky-cta">
+      <ion-button expand="block" (click)="viewMenu()">View Full Menu</ion-button>
+    </div>
+    }
+  }
+</ion-content>

@@ -1,0 +1,67 @@
+@if (loading) {
+  <ion-card class="ds-card ds-card--skeleton" tabindex="-1">
+    <div class="ds-card__image ds-skeleton"></div>
+    <div class="ds-card__body">
+      <ion-skeleton-text [animated]="true" style="width: 70%; height: 18px;"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" style="width: 40%; height: 14px;"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" style="width: 55%; height: 14px;"></ion-skeleton-text>
+    </div>
+  </ion-card>
+} @else {
+  <ion-card
+    class="ds-card"
+    button="true"
+    (click)="onOpen()"
+    [attr.aria-label]="restaurant.name + ', rated ' + restaurant.rating + ' out of 5'"
+  >
+    <div class="ds-card__image">
+      <img [src]="restaurant.heroImageUrl" [alt]="restaurant.name" loading="lazy" />
+
+      <button
+        class="ds-card__fav"
+        type="button"
+        (click)="onToggleFavorite($event)"
+        [attr.aria-pressed]="restaurant.isFavorite"
+        [attr.aria-label]="restaurant.isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+      >
+        <ion-icon [name]="restaurant.isFavorite ? 'heart' : 'heart-outline'"></ion-icon>
+      </button>
+
+      @if (!restaurant.isOpenNow) {
+        <ion-badge class="ds-card__status" color="medium">Closed</ion-badge>
+      }
+    </div>
+
+    <div class="ds-card__body">
+      <h3 class="ds-card__name">{{ restaurant.name }}</h3>
+
+      <div class="ds-card__meta">
+        <app-star-rating [rating]="restaurant.rating"></app-star-rating>
+        <span class="ds-muted">{{ restaurant.reviewCount | number }} reviews</span>
+      </div>
+
+      <div class="ds-card__tags">
+        @for (cuisine of restaurant.cuisines.slice(0, 2); track cuisine.id) {
+          <span class="ds-card__tag">{{ cuisine.emoji }} {{ cuisine.name }}</span>
+        }
+        @if (restaurant.dietaryOptions.length > 0) {
+          <span class="ds-card__tag">{{ restaurant.dietaryOptions[0].emoji }} {{ restaurant.dietaryOptions[0].label }}</span>
+        }
+      </div>
+
+      <div class="ds-card__footer">
+        <span>{{ restaurant.priceRange }}</span>
+        @if (restaurant.distanceKm !== null) {
+          <span class="ds-card__distance">
+            <ion-icon name="location-outline"></ion-icon>
+            {{ restaurant.distanceKm }} km
+          </span>
+        }
+      </div>
+
+      <ion-button expand="block" fill="outline" size="small" class="ds-card__cta">
+        View Menu
+      </ion-button>
+    </div>
+  </ion-card>
+}

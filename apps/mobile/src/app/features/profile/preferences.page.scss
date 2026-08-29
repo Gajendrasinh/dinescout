@@ -1,0 +1,29 @@
+.ds-prefs-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+
+  h1 {
+    margin: 0;
+    font-size: var(--ds-font-size-xl);
+  }
+}
+
+.ds-icon-button {
+  border: none;
+  background: var(--ds-color-surface-alt);
+  border-radius: 50%;
+  width: var(--ds-touch-target);
+  height: var(--ds-touch-target);
+  font-size: 20px;
+}
+
+.ds-prefs-group {
+  margin-bottom: var(--ds-space-6);
+}
+
+.ds-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+}

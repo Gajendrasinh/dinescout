@@ -1,0 +1,50 @@
+<ion-content>
+  <div class="ds-write-header ion-padding">
+    <button type="button" class="ds-icon-button" (click)="goBack()" aria-label="Back">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+    <h1>Write a Review</h1>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="ion-padding">
+    <label class="ds-form-label" id="rating-label">Your Rating</label>
+    <div class="ds-star-picker" role="radiogroup" aria-labelledby="rating-label">
+      @for (star of stars; track star) {
+        <button
+          type="button"
+          role="radio"
+          [attr.aria-checked]="form.value.rating === star"
+          [attr.aria-label]="star + ' stars'"
+          [class.ds-star-picker__active]="star <= (form.value.rating ?? 0)"
+          (click)="setRating(star)"
+        >
+          <ion-icon name="star"></ion-icon>
+        </button>
+      }
+    </div>
+
+    <label class="ds-form-label" for="review-title">Title</label>
+    <ion-input
+      id="review-title"
+      formControlName="title"
+      placeholder="Sum it up in a few words"
+      maxlength="120"
+      fill="outline"
+    ></ion-input>
+
+    <label class="ds-form-label" for="review-comment">Your Review</label>
+    <ion-textarea
+      id="review-comment"
+      formControlName="comment"
+      placeholder="What did you order? What stood out?"
+      [autoGrow]="true"
+      rows="5"
+      maxlength="2000"
+      fill="outline"
+    ></ion-textarea>
+
+    <ion-button expand="block" type="submit" [disabled]="submitting()" class="ds-submit">
+      {{ submitting() ? 'Posting…' : 'Post Review' }}
+    </ion-button>
+  </form>
+</ion-content>

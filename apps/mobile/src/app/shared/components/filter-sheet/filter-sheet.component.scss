@@ -1,0 +1,39 @@
+.ds-sheet-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ds-space-2) var(--ds-space-4);
+
+  h2 {
+    margin: 0;
+    font-size: var(--ds-font-size-xl);
+    font-weight: var(--ds-font-weight-bold);
+  }
+}
+
+.ds-filter-group {
+  margin-bottom: var(--ds-space-6);
+}
+
+.ds-filter-group--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ds-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+}
+
+.ds-sheet-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  padding: 0 var(--ds-space-4);
+
+  ion-button:last-child {
+    flex: 1;
+  }
+}

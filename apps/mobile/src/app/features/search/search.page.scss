@@ -1,0 +1,49 @@
+.ds-search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  width: 100%;
+  padding: 0 var(--ds-space-2);
+
+  ion-searchbar {
+    flex: 1;
+  }
+}
+
+.ds-filter-button {
+  position: relative;
+  border: none;
+  background: var(--ds-color-surface-alt);
+  border-radius: 50%;
+  width: var(--ds-touch-target);
+  height: var(--ds-touch-target);
+  font-size: 20px;
+  color: var(--ds-color-text);
+}
+
+.ds-filter-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: var(--ds-color-primary);
+  color: #fff;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-search-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--ds-space-8);
+}
+
+.ds-search-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--ds-space-3);
+}

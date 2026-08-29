@@ -1,0 +1,91 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <div class="ds-sheet-title">
+      <h2>Filters</h2>
+      <ion-button fill="clear" size="small" (click)="dismiss()">Close</ion-button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <section class="ds-filter-group">
+    <h3 class="ds-section-title">Cuisine</h3>
+    <div class="ds-chip-row">
+      @for (cuisine of cuisines; track cuisine.id) {
+        <app-chip
+          [label]="cuisine.name"
+          [emoji]="cuisine.emoji"
+          [selected]="state.cuisines.includes(cuisine.slug)"
+          (toggled)="toggleCuisine(cuisine.slug)"
+        ></app-chip>
+      }
+    </div>
+  </section>
+
+  <section class="ds-filter-group">
+    <h3 class="ds-section-title">Dietary</h3>
+    <div class="ds-chip-row">
+      @for (option of dietaryOptions; track option.id) {
+        <app-chip
+          [label]="option.label"
+          [emoji]="option.emoji"
+          [selected]="state.dietary.includes(option.slug)"
+          (toggled)="toggleDietary(option.slug)"
+        ></app-chip>
+      }
+    </div>
+  </section>
+
+  <section class="ds-filter-group">
+    <h3 class="ds-section-title">Rating</h3>
+    <div class="ds-chip-row">
+      @for (rating of ratingOptions; track rating) {
+        <app-chip
+          [label]="rating + '+'"
+          [selected]="state.ratingMin === rating"
+          (toggled)="selectRating(rating)"
+        ></app-chip>
+      }
+    </div>
+  </section>
+
+  <section class="ds-filter-group">
+    <h3 class="ds-section-title">Price</h3>
+    <div class="ds-chip-row">
+      @for (price of priceOptions; track price) {
+        <app-chip
+          [label]="price"
+          [selected]="state.price === price"
+          (toggled)="selectPrice(price)"
+        ></app-chip>
+      }
+    </div>
+  </section>
+
+  <section class="ds-filter-group">
+    <h3 class="ds-section-title">Distance</h3>
+    <div class="ds-chip-row">
+      @for (distance of distanceOptions; track distance) {
+        <app-chip
+          [label]="distance + ' km'"
+          [selected]="state.radiusKm === distance"
+          (toggled)="selectDistance(distance)"
+        ></app-chip>
+      }
+    </div>
+  </section>
+
+  <section class="ds-filter-group ds-filter-group--row">
+    <h3 class="ds-section-title">Open Now</h3>
+    <ion-toggle [(ngModel)]="state.openNow" [ngModelOptions]="{ standalone: true }"></ion-toggle>
+  </section>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <div class="ds-sheet-actions">
+      <ion-button fill="clear" (click)="reset()">Reset</ion-button>
+      <ion-button expand="block" (click)="applyFilters()">Show Results</ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

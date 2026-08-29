@@ -1,0 +1,41 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (isLoggedIn()) {
+    <div class="ds-profile-card ion-padding">
+      <div class="ds-profile-avatar">{{ user()!.displayName.charAt(0) }}</div>
+      <div>
+        <h2>{{ user()!.displayName }}</h2>
+        <p class="ds-muted">{{ user()!.email }}</p>
+      </div>
+    </div>
+
+    <div class="ds-profile-menu">
+      <button type="button" (click)="goToPreferences()">
+        <ion-icon name="options-outline"></ion-icon>
+        <span>Dietary &amp; Cuisine Preferences</span>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+      <button type="button" (click)="goToAiChat()">
+        <ion-icon name="sparkles"></ion-icon>
+        <span>Ask DineScout AI</span>
+        <ion-icon name="chevron-forward"></ion-icon>
+      </button>
+      <button type="button" class="ds-profile-menu__danger" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Log Out</span>
+      </button>
+    </div>
+  } @else {
+    <div class="ds-profile-signed-out ion-padding">
+      <ion-icon name="person-circle-outline"></ion-icon>
+      <h2>Sign in to DineScout</h2>
+      <p class="ds-muted">Save favorites across devices, write reviews, and get personalized recommendations.</p>
+      <button type="button" class="ds-profile-cta" (click)="goToLogin()">Log In / Sign Up</button>
+    </div>
+  }
+</ion-content>

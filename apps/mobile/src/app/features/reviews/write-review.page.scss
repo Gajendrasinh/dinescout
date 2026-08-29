@@ -1,0 +1,48 @@
+.ds-write-header {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+
+  h1 {
+    margin: 0;
+    font-size: var(--ds-font-size-xl);
+  }
+}
+
+.ds-icon-button {
+  border: none;
+  background: var(--ds-color-surface-alt);
+  border-radius: 50%;
+  width: var(--ds-touch-target);
+  height: var(--ds-touch-target);
+  font-size: 20px;
+}
+
+.ds-form-label {
+  display: block;
+  font-weight: var(--ds-font-weight-medium);
+  margin: var(--ds-space-4) 0 var(--ds-space-2);
+}
+
+.ds-star-picker {
+  display: flex;
+  gap: var(--ds-space-2);
+
+  button {
+    border: none;
+    background: none;
+    font-size: 32px;
+    color: var(--ds-color-border);
+    padding: 0;
+    width: var(--ds-touch-target);
+    height: var(--ds-touch-target);
+  }
+
+  &__active {
+    color: var(--ds-color-accent) !important;
+  }
+}
+
+.ds-submit {
+  margin-top: var(--ds-space-6);
+}

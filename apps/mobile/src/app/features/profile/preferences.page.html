@@ -1,0 +1,64 @@
+<ion-content>
+  <div class="ds-prefs-header ion-padding">
+    <button type="button" class="ds-icon-button" (click)="goBack()" aria-label="Back">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+    <h1>Preferences</h1>
+  </div>
+
+  <div class="ion-padding">
+    <section class="ds-prefs-group">
+      <h2 class="ds-section-title">Favorite Cuisines</h2>
+      <div class="ds-chip-row">
+        @for (cuisine of cuisines(); track cuisine.id) {
+          <app-chip
+            [label]="cuisine.name"
+            [emoji]="cuisine.emoji"
+            [selected]="selectedCuisines().includes(cuisine.slug)"
+            (toggled)="toggleCuisine(cuisine.slug)"
+          ></app-chip>
+        }
+      </div>
+    </section>
+
+    <section class="ds-prefs-group">
+      <h2 class="ds-section-title">Dietary Preferences</h2>
+      <div class="ds-chip-row">
+        @for (option of dietaryOptions(); track option.id) {
+          <app-chip
+            [label]="option.label"
+            [emoji]="option.emoji"
+            [selected]="selectedDietary().includes(option.slug)"
+            (toggled)="toggleDietary(option.slug)"
+          ></app-chip>
+        }
+      </div>
+    </section>
+
+    <section class="ds-prefs-group">
+      <h2 class="ds-section-title">Price Preference</h2>
+      <div class="ds-chip-row">
+        @for (price of priceOptions; track price) {
+          <app-chip [label]="price" [selected]="selectedPrice() === price" (toggled)="selectPrice(price)"></app-chip>
+        }
+      </div>
+    </section>
+
+    <section class="ds-prefs-group">
+      <h2 class="ds-section-title">Preferred Distance</h2>
+      <div class="ds-chip-row">
+        @for (distance of distanceOptions; track distance) {
+          <app-chip
+            [label]="distance + ' km'"
+            [selected]="selectedDistance() === distance"
+            (toggled)="selectDistance(distance)"
+          ></app-chip>
+        }
+      </div>
+    </section>
+
+    <ion-button expand="block" (click)="save()" [disabled]="saving()">
+      {{ saved() ? 'Saved ✓' : saving() ? 'Saving…' : 'Save Preferences' }}
+    </ion-button>
+  </div>
+</ion-content>

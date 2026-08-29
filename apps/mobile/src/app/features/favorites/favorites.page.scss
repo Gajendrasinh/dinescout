@@ -1,0 +1,11 @@
+.ds-favorites-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--ds-space-8);
+}
+
+.ds-favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--ds-space-3);
+}

@@ -9,7 +9,8 @@
     "packages/shared-types",
     "apps/api",
     "apps/mobile",
-    "apps/admin"
+    "apps/admin",
+    "e2e"
   ],
   "scripts": {
     "dev:api": "npm run start:dev --workspace apps/api",
@@ -23,6 +24,7 @@
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspace apps/api",
+    "test:e2e:critical-flows": "npm run e2e --workspace e2e",
     "format": "prettier --write .",
     "prisma:generate": "npm run prisma:generate --workspace apps/api",
     "prisma:migrate": "npm run prisma:migrate --workspace apps/api",

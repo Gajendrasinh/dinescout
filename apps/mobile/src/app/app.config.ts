@@ -20,8 +20,14 @@ export const appConfig: ApplicationConfig = {
     // race AuthService's async bootstrap on a hard reload/deep link into a
     // guarded route (e.g. /profile/preferences) and wrongly redirect to login.
     provideAppInitializer(async () => {
-      await inject(AuthService).bootstrap();
-      await inject(FavoritesService).bootstrap();
+      // Both inject() calls must happen synchronously, before the first
+      // `await` — inject() only works inside an active injection context,
+      // and crossing an `await` exits it (NG0203). Grab the services first,
+      // then run the async bootstrap calls.
+      const authService = inject(AuthService);
+      const favoritesService = inject(FavoritesService);
+      await authService.bootstrap();
+      await favoritesService.bootstrap();
     }),
   ],
 };

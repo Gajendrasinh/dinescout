@@ -1,0 +1,14 @@
+{
+  "name": "@dinescout/e2e",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playwright E2E specs for DineScout's critical user flows, driven against the real mobile web app and the real API + database.",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed"
+  },
+  "devDependencies": {
+    "@dinescout/tsconfig": "*",
+    "@playwright/test": "^1.55.0"
+  }
+}

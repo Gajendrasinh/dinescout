@@ -1,0 +1,10 @@
+{
+  "extends": "@dinescout/tsconfig/base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": ["**/*.ts"]
+}

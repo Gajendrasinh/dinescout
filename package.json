@@ -1,0 +1,36 @@
+{
+  "name": "dinescout",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DineScout — Discover. Compare. Taste. AI-powered restaurant discovery platform.",
+  "workspaces": [
+    "apps/api",
+    "apps/mobile",
+    "apps/admin",
+    "packages/shared-types",
+    "packages/eslint-config",
+    "packages/tsconfig"
+  ],
+  "scripts": {
+    "dev:api": "npm run start:dev --workspace apps/api",
+    "dev:mobile": "npm run start --workspace apps/mobile",
+    "dev:admin": "npm run start --workspace apps/admin",
+    "build": "npm run build --workspaces --if-present",
+    "build:api": "npm run build --workspace apps/api",
+    "build:mobile": "npm run build --workspace apps/mobile",
+    "build:admin": "npm run build --workspace apps/admin",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspace apps/api",
+    "format": "prettier --write .",
+    "prisma:generate": "npm run prisma:generate --workspace apps/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace apps/api",
+    "prisma:seed": "npm run prisma:seed --workspace apps/api"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

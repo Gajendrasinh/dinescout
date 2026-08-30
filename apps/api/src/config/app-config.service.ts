@@ -92,6 +92,27 @@ export class AppConfigService {
     return this.config.get<string>('MAP_API_KEY') || undefined;
   }
 
+  /** `undefined` when no SMTP host is configured — callers use this to pick ConsoleEmailProvider vs. SmtpEmailProvider. */
+  get smtp():
+    | { host: string; port: number; secure: boolean; auth?: { user: string; pass: string } }
+    | undefined {
+    const host = this.config.get<string>('SMTP_HOST');
+    if (!host) return undefined;
+
+    const user = this.config.get<string>('SMTP_USER');
+    const pass = this.config.get<string>('SMTP_PASSWORD');
+    return {
+      host,
+      port: this.config.getOrThrow<number>('SMTP_PORT'),
+      secure: this.config.getOrThrow<string>('SMTP_SECURE') === 'true',
+      auth: user && pass ? { user, pass } : undefined,
+    };
+  }
+
+  get emailFrom(): string {
+    return this.config.getOrThrow<string>('EMAIL_FROM');
+  }
+
   get rateLimit(): { ttlSeconds: number; max: number } {
     return {
       ttlSeconds: this.config.getOrThrow<number>('RATE_LIMIT_TTL_SECONDS'),

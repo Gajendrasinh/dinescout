@@ -81,6 +81,7 @@ See `.env.example` for the full annotated list. The ones worth calling out:
 | `JWT_SECRET`, `JWT_REFRESH_SECRET` | yes | ≥32 chars, must differ from each other and from the checked-in placeholder in production — enforced at boot, see `docs/SECURITY.md` |
 | `AI_API_KEY` | no | Unset → `LocalHeuristicAiProvider` fallback, app still fully functional |
 | `MAP_API_KEY` | no | Unset → static/list map fallback |
+| `SMTP_HOST` | no | Unset → `ConsoleEmailProvider` fallback (logs instead of sending). Set → real SMTP delivery via any vendor (SES, SendGrid, Mailgun, ...), see `docs/SECURITY.md` |
 | `CORS_ORIGINS` | yes (prod) | Comma-separated; never a wildcard |
 | `API_BASE_URL` | build-time (mobile/admin) | Baked into the Angular build, not runtime-configurable |
 

@@ -13,7 +13,10 @@ api_image_tag     = "latest" # pin to a commit SHA tag in real CI, not "latest"
 #   JWT_REFRESH_SECRET = "arn:aws:secretsmanager:us-east-1:123456789012:secret:dinescout/jwt-refresh-xxxxxx"
 #   AI_API_KEY         = "arn:aws:secretsmanager:us-east-1:123456789012:secret:dinescout/ai-key-xxxxxx"
 #   MAP_API_KEY        = "arn:aws:secretsmanager:us-east-1:123456789012:secret:dinescout/map-key-xxxxxx"
+#   SMTP_PASSWORD      = "arn:aws:secretsmanager:us-east-1:123456789012:secret:dinescout/smtp-password-xxxxxx"
 # }
+# (SMTP_HOST/SMTP_USER aren't secret — pass them as plain environment_variables
+# in the api_service module block in main.tf if you configure email delivery.)
 
 tags = {
   Owner = "dinescout-team"

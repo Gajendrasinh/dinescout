@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { createHash, randomBytes } from 'node:crypto';
 import { AppConfigService } from '../config/app-config.service';
@@ -23,6 +23,8 @@ function hashOpaqueToken(token: string): string {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly tokens: TokenService,
@@ -110,11 +112,24 @@ export class AuthService {
       },
     });
 
-    await this.email.send({
-      to: user.email,
-      subject: 'Reset your DineScout password',
-      body: `Use this token to reset your password: ${rawToken} (expires in 1 hour)`,
-    });
+    try {
+      await this.email.send({
+        to: user.email,
+        subject: 'Reset your DineScout password',
+        body: `Use this token to reset your password: ${rawToken} (expires in 1 hour)`,
+      });
+    } catch (error) {
+      // forgotPassword() must always resolve the same way regardless of
+      // whether the email address is registered (see the doc comment
+      // above) — an existing user hitting a real send failure (SMTP relay
+      // down, invalid creds, ...) must not turn into a different response
+      // than a nonexistent email gets, or that difference becomes a user-
+      // enumeration oracle during any real-world email outage. The reset
+      // token itself was already persisted above, so the token stays
+      // usable if delivery is retried out-of-band; only the notification
+      // failed.
+      this.logger.error(`forgotPassword: email delivery failed for user ${user.id}: ${(error as Error).message}`);
+    }
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<void> {

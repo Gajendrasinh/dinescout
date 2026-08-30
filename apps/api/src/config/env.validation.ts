@@ -83,6 +83,34 @@ class EnvironmentVariables {
   @IsString()
   MAP_API_KEY?: string;
 
+  // Outbound email (password reset). Unset SMTP_HOST -> ConsoleEmailProvider
+  // (logs instead of sending, see apps/api/src/auth/providers/email.provider.ts)
+  // -> the app runs with zero email vendor credentials, same fallback
+  // pattern as AI_API_KEY/MAP_API_KEY above. Any real SMTP-speaking vendor
+  // works here (Amazon SES, SendGrid, Mailgun, Postmark, ...) — nothing
+  // vendor-specific is assumed.
+  @IsOptional()
+  @IsString()
+  SMTP_HOST?: string;
+
+  @Type(() => Number)
+  @IsInt()
+  SMTP_PORT = 587;
+
+  @IsIn(['true', 'false'])
+  SMTP_SECURE = 'false';
+
+  @IsOptional()
+  @IsString()
+  SMTP_USER?: string;
+
+  @IsOptional()
+  @IsString()
+  SMTP_PASSWORD?: string;
+
+  @IsString()
+  EMAIL_FROM = 'DineScout <no-reply@dinescout.app>';
+
   @Type(() => Number)
   @IsInt()
   RATE_LIMIT_TTL_SECONDS = 60;
@@ -125,6 +153,13 @@ export function validateEnv(config: Record<string, unknown>): EnvironmentVariabl
           'deploying to production.',
       );
     }
+  }
+  if (Boolean(validated.SMTP_USER) !== Boolean(validated.SMTP_PASSWORD)) {
+    throw new Error(
+      'Invalid environment configuration: SMTP_USER and SMTP_PASSWORD must be set together ' +
+        '(or both left unset for an unauthenticated relay) — one without the other is almost ' +
+        'always a copy-paste mistake, not an intentional configuration.',
+    );
   }
 
   return validated;

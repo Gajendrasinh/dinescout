@@ -9,6 +9,7 @@ import { OptionalAuthGuard } from './guards/optional-auth.guard';
 import { RequireAuthGuard } from './guards/require-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { ConsoleEmailProvider, EMAIL_PROVIDER } from './providers/email.provider';
+import { SmtpEmailProvider } from './providers/smtp-email.provider';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TokenService } from './token.service';
 
@@ -34,7 +35,20 @@ import { TokenService } from './token.service';
     OptionalAuthGuard,
     RequireAuthGuard,
     RolesGuard,
-    { provide: EMAIL_PROVIDER, useClass: ConsoleEmailProvider },
+    ConsoleEmailProvider,
+    SmtpEmailProvider,
+    {
+      // Same zero-credential-fallback pattern as AI_PROVIDER/MAP_PROVIDER
+      // in ai.module.ts: SMTP_HOST unset -> ConsoleEmailProvider, so the
+      // app runs with no email vendor credentials at all.
+      provide: EMAIL_PROVIDER,
+      inject: [AppConfigService, SmtpEmailProvider, ConsoleEmailProvider],
+      useFactory: (
+        config: AppConfigService,
+        smtp: SmtpEmailProvider,
+        console_: ConsoleEmailProvider,
+      ) => (config.smtp ? smtp : console_),
+    },
   ],
   exports: [OptionalAuthGuard, RequireAuthGuard, RolesGuard, TokenService],
 })

@@ -66,4 +66,40 @@ describe('validateEnv', () => {
     delete config.DATABASE_URL;
     expect(() => validateEnv(config)).toThrow(/Invalid environment configuration/);
   });
+
+  it('accepts SMTP left entirely unset (ConsoleEmailProvider fallback)', () => {
+    expect(() => validateEnv(validConfig())).not.toThrow();
+  });
+
+  it('accepts a full SMTP configuration', () => {
+    expect(() =>
+      validateEnv(
+        validConfig({
+          SMTP_HOST: 'smtp.example.com',
+          SMTP_PORT: '587',
+          SMTP_SECURE: 'false',
+          SMTP_USER: 'apikey',
+          SMTP_PASSWORD: 'secret',
+        }),
+      ),
+    ).not.toThrow();
+  });
+
+  it('accepts SMTP_HOST with no auth (unauthenticated relay)', () => {
+    expect(() =>
+      validateEnv(validConfig({ SMTP_HOST: 'smtp.internal', SMTP_USER: undefined, SMTP_PASSWORD: undefined })),
+    ).not.toThrow();
+  });
+
+  it('rejects SMTP_USER set without SMTP_PASSWORD', () => {
+    expect(() => validateEnv(validConfig({ SMTP_USER: 'apikey' }))).toThrow(
+      /SMTP_USER and SMTP_PASSWORD must be set together/,
+    );
+  });
+
+  it('rejects SMTP_PASSWORD set without SMTP_USER', () => {
+    expect(() => validateEnv(validConfig({ SMTP_PASSWORD: 'secret' }))).toThrow(
+      /SMTP_USER and SMTP_PASSWORD must be set together/,
+    );
+  });
 });

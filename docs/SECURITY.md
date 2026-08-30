@@ -75,16 +75,51 @@
 
 - `.env` is gitignored (`.env.example` is the only committed template);
   `apps/api/.env` is separately gitignored too.
-- `AI_API_KEY`/`MAP_API_KEY` are read server-side only and never appear in
-  any API response or frontend bundle — both features degrade to a
-  zero-credential fallback provider when unset, rather than the app
-  refusing to run (see `docs/AI.md`).
+- `AI_API_KEY`/`MAP_API_KEY`/`SMTP_PASSWORD` are read server-side only and
+  never appear in any API response or frontend bundle — all three features
+  (AI, maps, password-reset email) degrade to a zero-credential fallback
+  provider when unset, rather than the app refusing to run (see
+  `docs/AI.md`; email covered next).
 - Terraform (`infrastructure/terraform/`) reads app secrets from AWS
   Secrets Manager by ARN — it never generates or stores a secret value
   itself, and the DB master password is generated with `random_password`
   and stored in Secrets Manager, not passed as a plain `tfvars` value.
 - A repo-wide scan for common secret-key patterns (`sk-ant-…`,
   `AIza…`, `AKIA…`) turned up nothing committed.
+
+## Email delivery (password reset)
+
+Same provider-interface pattern as `AiProvider`/`MapProvider`
+(`EmailProvider`, `apps/api/src/auth/providers/email.provider.ts`), with a
+real implementation: `SmtpEmailProvider`
+(`apps/api/src/auth/providers/smtp-email.provider.ts`) speaks SMTP via
+`nodemailer`, so it works with any SMTP-capable vendor (Amazon SES,
+SendGrid, Mailgun, Postmark, an internal relay) without vendor lock-in.
+`SMTP_HOST` unset → `ConsoleEmailProvider` (logs instead of sending), same
+zero-credential-fallback shape as `AI_API_KEY`/`MAP_API_KEY`; the selection
+factory lives in `auth.module.ts`.
+
+- `env.validation.ts` requires `SMTP_USER`/`SMTP_PASSWORD` to be set
+  together or not at all — one without the other is a config mistake
+  (a relay you meant to authenticate against, silently sent unauthenticated,
+  or vice versa), so it fails boot rather than failing at send time.
+- A real send failure (relay down, bad credentials, DNS failure) is caught
+  and logged server-side, **never propagated to the HTTP response** — the
+  `forgot-password` endpoint's contract ("always returns success, whether
+  or not the email exists") would otherwise become a user-enumeration
+  oracle during any real-world email outage: an existing user hitting a
+  send failure could 500 while a nonexistent one silently 200s. Verified
+  live: booted the API with `SMTP_HOST` pointed at a real nonexistent host,
+  called `/auth/forgot-password`, and confirmed (a) `SmtpEmailProvider`
+  logged a genuine `getaddrinfo ENOTFOUND` failure, and (b) the HTTP
+  response was still `200` with the identical generic message.
+- `SmtpEmailProvider` is registered in `auth.module.ts`'s `providers` array
+  (so NestJS constructs it whether or not it ends up selected), but builds
+  its `nodemailer` transporter lazily on first `send()` rather than in the
+  constructor — constructing it eagerly would throw when `SMTP_HOST` is
+  unset, breaking every environment that doesn't configure SMTP (i.e. this
+  one, and any default dev/CI setup). Caught before it shipped by actually
+  booting the app, not just by the unit tests passing.
 
 ## Known gaps — stated plainly, not hidden
 
@@ -103,13 +138,3 @@
 - **No WAF/CloudFront** in front of the Terraform-provisioned ALB yet
   (noted in `infrastructure/terraform/README.md`).
 - **No automated dependency-update bot** (Dependabot/Renovate) configured.
-- **Password-reset email delivery defaults to console logging.**
-  `forgot-password`/`reset-password` use the same provider-interface
-  pattern as `AiProvider`/`MapProvider` (`EmailProvider`,
-  `apps/api/src/auth/providers/email.provider.ts`), but the only
-  implementation wired up is `ConsoleEmailProvider` — it logs the reset
-  link server-side instead of sending a real email. The flow (token
-  generation, `PasswordResetToken` expiry, "always return success whether
-  or not the email exists" to avoid user enumeration) is real and tested;
-  a real SMTP/SES-backed `EmailProvider` implementation would need to be
-  added before this is usable end-to-end in production.
